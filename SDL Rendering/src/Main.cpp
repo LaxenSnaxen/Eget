@@ -11,7 +11,12 @@ int main(int argc, char* argv[])
     else
     {
         SDL_Window* window;
-        window = SDL_CreateWindow("Test Window", 400, 300, 800, 600, SDL_WINDOW_SHOWN);
+        SDL_Renderer* renderer;
+        SDL_CreateWindowAndRenderer(128*6, 64*6, 0, &window, &renderer);
+        SDL_RenderSetScale(renderer, 6, 6);
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        SDL_RenderDrawPoint(renderer, 128/2, 64/2);
+        SDL_RenderPresent(renderer);
 
         while (true)
         {
@@ -29,3 +34,12 @@ int main(int argc, char* argv[])
 
     return 0;
 }
+
+/*int simulation()
+{
+    int arr[127][63]
+    for (int i = 0; i < 129);
+    {
+        NULL;
+    }
+}*/
