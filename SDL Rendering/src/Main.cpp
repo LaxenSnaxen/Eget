@@ -38,7 +38,7 @@ int main(int argc, char* argv[])
 /*int simulation()
 {
     int arr[127][63]
-    for (int i = 0; i < 129);
+    for (int i = 0; i < 128);
     {
         NULL;
     }
