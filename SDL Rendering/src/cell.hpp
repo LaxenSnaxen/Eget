@@ -2,6 +2,6 @@
 
 Struct cell
 {
-    int id = 0
-    bool occupied = false
+    int id;
+    bool occupied;
 }
