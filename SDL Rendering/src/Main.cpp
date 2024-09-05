@@ -4,18 +4,50 @@
 #include <iostream>
 #include <thread>
 
-int gravity()
+/*void mouse()
+            {
+                    while (true)
+                    {   
+                        SDL_Event event;
+                        if (SDL_PollEvent(&event));
+                        {
+                            if (event.type == SDL_QUIT)
+                                break;
+                            if (event.type == SDL_MOUSEMOTION)
+                            {
+                                int x,y;
+                                SDL_GetMouseState( &x, &y);
+                                std::cout << x <<" : " << y << std::endl;
+                            }
+                            if (event.type == SDL_MOUSEBUTTONDOWN)
+                            {
+                                if(SDL_BUTTON_LEFT == event.button.button)
+                                    {std::cout << "LMB DOWN" << std::endl; }
+                                if(SDL_BUTTON_RIGHT == event.button.button)
+                                    {std::cout << "RMB DOWN" << std::endl; }
+                                if(SDL_BUTTON_MIDDLE == event.button.button)
+                                    {std::cout << "MMB DOWN" << std::endl; }
+                            }
+                            if (event.type == SDL_MOUSEBUTTONUP)
+                            {
+                                if(SDL_BUTTON_LEFT == event.button.button)
+                                    {std::cout << "LMB UP" << std::endl; }
+                                if(SDL_BUTTON_RIGHT == event.button.button)
+                                    {std::cout << "RMB UP" << std::endl; }
+                                if(SDL_BUTTON_MIDDLE == event.button.button)
+                                    {std::cout << "MMB UP" << std::endl; }
+                            }
+                        }
+                    }
+
+            }
+*/
+
+void workFunc(int times)
 {
-    int grid[640-1][640-1];
-    for (int x = 0; x < 640; x++)
-    {
-        for (int y = 0; y < 640; y++)
-        {
-            grid[x][y] = 0;
-            std::cout << "x: " << x << " , " << "y: "<<  y << std::endl;
-        }
-    }
-    return 0;
+	while(times) {
+		std::cout << "YEAH"<< std::endl;
+	}
 }
 
 int main(int argc, char* argv[])
@@ -33,55 +65,26 @@ int main(int argc, char* argv[])
         SDL_RenderDrawPoint(renderer, 64/2, 64/2);
         SDL_RenderPresent(renderer);
 
-        while (true)
-        {
-            SDL_Event event;
-            if (SDL_PollEvent(&event));
-            {
-                if (event.type == SDL_QUIT)
-                    break;
-                if (event.type == SDL_MOUSEMOTION)
-                {
-                    int x,y;
-                    SDL_GetMouseState( &x, &y);
-                    std::cout << x <<" : " << y << std::endl;
-                }
-                if (event.type == SDL_MOUSEBUTTONDOWN)
-                {
-                    if(SDL_BUTTON_LEFT == event.button.button)
-                        {std::cout << "LMB DOWN" << std::endl; }
-                    if(SDL_BUTTON_RIGHT == event.button.button)
-                        {std::cout << "RMB DOWN" << std::endl; }
-                    if(SDL_BUTTON_MIDDLE == event.button.button)
-                        {std::cout << "MMB DOWN" << std::endl; }
-                }
-                if (event.type == SDL_MOUSEBUTTONUP)
-                {
-                    if(SDL_BUTTON_LEFT == event.button.button)
-                        {std::cout << "LMB UP" << std::endl; }
-                    if(SDL_BUTTON_RIGHT == event.button.button)
-                        {std::cout << "RMB UP" << std::endl; }
-                    if(SDL_BUTTON_MIDDLE == event.button.button)
-                        {std::cout << "MMB UP" << std::endl; }
-                }
-            } 
-    int grid[640-1][640-1];
-    for (int x = 0; x < 640; x++)
+    int grid[64-1][64-1];
+    for (int x = 0; x < 64; x++)
     {
-        for (int y = 0; y < 640; y++)
+        std::cout << "x: " << x << std::endl;
+        for (int y = 0; y < 64; y++)
         {
+            std::cout << "y: " << y << std::endl;
             grid[x][y] = 0;
-            //std::cout << "x: " << x << " , " << "y: "<<  y << std::endl;
+        
         }
+        std::cout << "List completed" << std::endl;
     }
-    std::cout << "List completed" << std::endl;
-    return 0;
-        }
+    std::cout << "Full List completed" << std::endl;
+    std::thread mouseInput(workFunc(300));
+    mouseInput.join();
+    SDL_Delay(100000);
+    
 
-        SDL_DestroyWindow(window);
-    }
-
+    SDL_DestroyWindow(window);
     SDL_Quit();
-
     return 0;
+    }
 }
