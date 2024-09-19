@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": ".",
-      "program": "build/Debug/outDebug",
+      "cwd": "c:/Users/maximiliam.svedlund/Github/Eget/SDL Rendering/src",
+      "program": "c:/Users/maximiliam.svedlund/Github/Eget/SDL Rendering/src/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

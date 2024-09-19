@@ -55,6 +55,9 @@ int main(int argc, char* argv[])
         int** grid = new int*[64];
         for (int x = 0; x < 64; x++)
             grid[x] = new int[64];
+        for (int x = 0; x < 64; x++)
+            for (int y = 0; y < 64; y++)
+                grid[x][y] = 0;
 
 
         while (true)
