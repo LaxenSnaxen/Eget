@@ -6,19 +6,6 @@
 #include <cmath>
 #include <time.h>
 
-int printArray2D (int**arr)
-{
-
-    for(int a = 0; a < 64; a++)
-    {
-        for(int b = 0; b < 64; b++)
-        {
-            std::cout << arr[a][b] << " ";
-        }
-        std::cout << std::endl;
-    }  
-    return 0;
-}
 
 template<typename T>
 
@@ -32,6 +19,57 @@ int removeOldPointCreatNew(T renderer, int x, int y, int nx, int ny, int** grid)
     grid [x] [y] = 0;
     grid [nx] [ny] = 1;
     return 0;
+}
+
+template<typename T>
+
+void updateGrid(T renderer, int x, int y, int** grid)
+{
+
+    for (int x = 0; x < 64; x++)
+        {
+        for (int y = 0; y < 64; y++)
+            {
+            if (grid[x][y] == 1 && y != 63)
+                {
+                if (grid[x][y+1] == 0)
+                    {
+                    int nx = x;
+                    int ny = y + 1;
+                    removeOldPointCreatNew(renderer, x, y, nx, ny, grid);
+                    }
+                else if (grid[x+1][y+1] == 0 & (grid[x-1][y+1] == 0))
+                    {
+                        std::srand(time(NULL));
+                        int random_value = std::rand() % 2;
+                        if (random_value != 1)
+                        {
+                        int nx = x + 1;
+                        int ny = y + 1;
+                        removeOldPointCreatNew(renderer, x, y, nx, ny, grid);
+                        }
+                        else
+                        {
+                        int nx = x - 1;
+                        int ny = y + 1;
+                        removeOldPointCreatNew(renderer, x, y, nx, ny, grid);
+                        }
+                    }
+                else if (grid[x-1][y+1] == 0 & grid[x+1][y+1] == 1)
+                    {
+                    int nx = x - 1;
+                    int ny = y + 1;
+                    removeOldPointCreatNew(renderer, x, y, nx, ny, grid);
+                    }
+                else if (grid[x+1][y+1] == 0 & grid[x-1][y+1] == 1)
+                    {
+                    int nx = x + 1;
+                    int ny = y + 1;
+                    removeOldPointCreatNew(renderer, x, y, nx, ny, grid);
+                    }
+                }
+            }
+        }
 }
 
 int main(int argc, char* argv[])
@@ -48,9 +86,10 @@ int main(int argc, char* argv[])
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         //SDL_RenderDrawPoint(renderer, 64/2, 64/2);
         SDL_RenderPresent(renderer);
-
         SDL_RenderClear(renderer);
-        
+
+
+
         // Alla celler ska vara noll, men jag tror att det inte defineras ordentligt, jag vet inte heller hur jag ska set till att allt ska defineras som nollor utan att byta det sätt jag definerar arrayen på, vilket skulle fucka med vissa funktioner.
         int** grid = new int*[64];
         for (int x = 0; x < 64; x++)
@@ -59,10 +98,12 @@ int main(int argc, char* argv[])
             for (int y = 0; y < 64; y++)
                 grid[x][y] = 0;
 
-
+        int counter = 0;
         while (true)
         {   
             SDL_PumpEvents();
+
+            counter += 1;
             int x,y = 0;
             int mouseState = SDL_GetMouseState(&x, &y);
             //std::cout << mouseState << std::endl;
@@ -70,11 +111,9 @@ int main(int argc, char* argv[])
             if (mouseState == 1) 
             {
                 SDL_SetRenderDrawColor(renderer, 235, 195, 50, 255);
-                SDL_Delay(100);
                 x =  round(x/10);
                 y =  round(y/10);
                 std::cout << x << ":" << y << std::endl;
-                SDL_Delay(10);
                 std::cout << "Before: " << grid[x][y] << std::endl;
                 grid[x][y] = 1;
                 std::cout << "After: " << grid[x][y] << std::endl;
@@ -82,7 +121,6 @@ int main(int argc, char* argv[])
                 SDL_RenderPresent(renderer);
                 //printArray2D(grid);
             }
-
             SDL_Event event;
             if (SDL_PollEvent(&event));
             {
@@ -98,55 +136,12 @@ int main(int argc, char* argv[])
                 }
                 
             }
-            
-
-            for (int x = 0; x < 64; x++)
-            {
-            for (int y = 0; y < 64; y++)
+            std::cout << counter << std::endl;
+            if (counter == 100)
                 {
-                if (grid[x][y] == 1 && y != 63)
-                    {
-
-                    if (grid[x][y+1] == 0)
-                        {
-                        int nx = x;
-                        int ny = y + 1;
-                        removeOldPointCreatNew(renderer, x, y, nx, ny, grid);
-                        }
-                    else if (grid[x+1][y+1] == 0 & (grid[x-1][y+1] == 0))
-                        {
-                            std::srand(time(NULL));
-                            int random_value = std::rand() % 2;
-                            if (random_value != 1)
-                            {
-                            int nx = x + 1;
-                            int ny = y + 1;
-                            removeOldPointCreatNew(renderer, x, y, nx, ny, grid);
-                            }
-                            else
-                            {
-                            int nx = x - 1;
-                            int ny = y + 1;
-                            removeOldPointCreatNew(renderer, x, y, nx, ny, grid);
-                            }
-
-                        }
-                    else if (grid[x-1][y+1] == 0 & grid[x+1][y+1] == 1)
-                        {
-                        int nx = x - 1;
-                        int ny = y + 1;
-                        removeOldPointCreatNew(renderer, x, y, nx, ny, grid);
-                        }
-                    else if (grid[x+1][y+1] == 0 & grid[x-1][y+1] == 1)
-                        {
-                        int nx = x + 1;
-                        int ny = y + 1;
-                        removeOldPointCreatNew(renderer, x, y, nx, ny, grid);
-                        }
-
-                    }
+                    counter -= 100;
+                    updateGrid(renderer, x, y, grid);
                 }
-            }
         }
 
     SDL_Delay(100000);
