@@ -7,6 +7,9 @@
 #include <time.h>
 
 
+
+int lastUpdateTime = 0;
+
 template<typename T>
 
 int removeOldPointCreatNew(T renderer, int x, int y, int nx, int ny, int** grid)
@@ -21,134 +24,140 @@ int removeOldPointCreatNew(T renderer, int x, int y, int nx, int ny, int** grid)
     return 0;
 }
 
+
 template<typename T>
-
-void updateGrid(T renderer, int x, int y, int** grid)
+void updateGrid(T renderer, int** grid, int** lastUpdateTimeGrid, int currentTime)
 {
-
+    // Loopar över hela griden
     for (int x = 0; x < 64; x++)
+    {
+        for (int y = 63; y >= 0; y--)  // Starta längst ner för att undvika problem med att kolla nästa rad
         {
-        for (int y = 0; y < 64; y++)
+            if (grid[x][y] == 1 && y != 63)  // Om sandkornet inte är längst ner
             {
-            if (grid[x][y] == 1 && y != 63)
+                // Kolla om tillräckligt mycket tid har passerat för just detta korn
+                if (currentTime - lastUpdateTimeGrid[x][y] >= 200)  // 200 ms mellan uppdateringar
                 {
-                if (grid[x][y+1] == 0)
+                    lastUpdateTimeGrid[x][y] = currentTime;  // Uppdatera tiden för detta korn
+
+                    // Fysiklogik för sandens fall
+                    if (grid[x][y + 1] == 0)  // Om det är tomt under, flytta ner
                     {
-                    int nx = x;
-                    int ny = y + 1;
-                    removeOldPointCreatNew(renderer, x, y, nx, ny, grid);
-                    }
-                else if (grid[x+1][y+1] == 0 & (grid[x-1][y+1] == 0))
-                    {
-                        std::srand(time(NULL));
-                        int random_value = std::rand() % 2;
-                        if (random_value != 1)
-                        {
-                        int nx = x + 1;
+                        int nx = x;
                         int ny = y + 1;
                         removeOldPointCreatNew(renderer, x, y, nx, ny, grid);
-                        }
-                        else
-                        {
+                    }
+                    else if (grid[x + 1][y + 1] == 0 && grid[x - 1][y + 1] == 0)  // Om det finns plats på båda sidor
+                    {
+                        std::srand(time(NULL));  // Slumpa riktning
+                        int random_value = std::rand() % 2;
+                        int nx = (random_value != 1) ? x + 1 : x - 1;
+                        int ny = y + 1;
+                        removeOldPointCreatNew(renderer, x, y, nx, ny, grid);
+                    }
+                    else if (grid[x - 1][y + 1] == 0 && grid[x + 1][y + 1] == 1)
+                    {
                         int nx = x - 1;
                         int ny = y + 1;
                         removeOldPointCreatNew(renderer, x, y, nx, ny, grid);
-                        }
                     }
-                else if (grid[x-1][y+1] == 0 & grid[x+1][y+1] == 1)
+                    else if (grid[x + 1][y + 1] == 0 && grid[x - 1][y + 1] == 1)
                     {
-                    int nx = x - 1;
-                    int ny = y + 1;
-                    removeOldPointCreatNew(renderer, x, y, nx, ny, grid);
-                    }
-                else if (grid[x+1][y+1] == 0 & grid[x-1][y+1] == 1)
-                    {
-                    int nx = x + 1;
-                    int ny = y + 1;
-                    removeOldPointCreatNew(renderer, x, y, nx, ny, grid);
+                        int nx = x + 1;
+                        int ny = y + 1;
+                        removeOldPointCreatNew(renderer, x, y, nx, ny, grid);
                     }
                 }
             }
         }
+    }
+}
+
+
+template<typename T>
+
+void placeSand(T renderer, int** grid, int x, int y)
+{
+    SDL_SetRenderDrawColor(renderer, 235, 195, 50, 255);
+    std::cout << "Before: " << grid[x][y] << std::endl;
+    grid[x][y] = 1;
+    std::cout << "After: " << grid[x][y] << std::endl;
+    SDL_RenderDrawPoint(renderer, x, y);
+    SDL_RenderPresent(renderer);
 }
 
 int main(int argc, char* argv[])
-{   
-    if (SDL_Init(SDL_INIT_VIDEO != 0))
+{
+    if (SDL_Init(SDL_INIT_VIDEO) != 0)
         std::cout << "Error: " << SDL_GetError();
     else
     {
-
         SDL_Window* window;
         SDL_Renderer* renderer;
-        SDL_CreateWindowAndRenderer(64*10, 64*10, 0, &window, &renderer);
+        SDL_CreateWindowAndRenderer(64 * 10, 64 * 10, 0, &window, &renderer);
         SDL_RenderSetScale(renderer, 10, 10);
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-        //SDL_RenderDrawPoint(renderer, 64/2, 64/2);
         SDL_RenderPresent(renderer);
         SDL_RenderClear(renderer);
 
-
-
-        // Alla celler ska vara noll, men jag tror att det inte defineras ordentligt, jag vet inte heller hur jag ska set till att allt ska defineras som nollor utan att byta det sätt jag definerar arrayen på, vilket skulle fucka med vissa funktioner.
+        // Skapa griden och en grid för senaste uppdateringstid för varje sandkorn
         int** grid = new int*[64];
+        int** lastUpdateTimeGrid = new int*[64];
+
         for (int x = 0; x < 64; x++)
+        {
             grid[x] = new int[64];
-        for (int x = 0; x < 64; x++)
+            lastUpdateTimeGrid[x] = new int[64];
             for (int y = 0; y < 64; y++)
-                grid[x][y] = 0;
-
-        int counter = 0;
-        while (true)
-        {   
-            SDL_PumpEvents();
-
-            counter += 1;
-            int x,y = 0;
-            int mouseState = SDL_GetMouseState(&x, &y);
-            //std::cout << mouseState << std::endl;
-            
-            if (mouseState == 1) 
             {
-                SDL_SetRenderDrawColor(renderer, 235, 195, 50, 255);
-                x =  round(x/10);
-                y =  round(y/10);
-                std::cout << x << ":" << y << std::endl;
-                std::cout << "Before: " << grid[x][y] << std::endl;
-                grid[x][y] = 1;
-                std::cout << "After: " << grid[x][y] << std::endl;
-                SDL_RenderDrawPoint(renderer, x, y);
-                SDL_RenderPresent(renderer);
-                //printArray2D(grid);
+                grid[x][y] = 0;
+                lastUpdateTimeGrid[x][y] = 0;
             }
+        }
+
+        int lastUpdateTime = SDL_GetTicks();
+        const int updateInterval = 50;  // Bestäm hur långsamt sanden ska falla (millisekunder)
+
+        while (true)
+        {
+            SDL_PumpEvents();
+            int x, y = 0;
+            int mouseState = SDL_GetMouseState(&x, &y);
+
+            if (mouseState == 1)
+            {
+                x = round(x / 10);
+                y = round(y / 10);
+                placeSand(renderer, grid, x, y);
+            }
+
             SDL_Event event;
-            if (SDL_PollEvent(&event));
+            if (SDL_PollEvent(&event))
             {
                 if (event.type == SDL_QUIT)
                     break;
-                if (event.type == SDL_MOUSEMOTION)
-                {
-                    int x,y = 0;
-                    SDL_GetMouseState( &x, &y);
-                    x =  round(x/10);
-                    y =  round(y/10);
-                    std::cout << x <<" : " << y << std::endl;
-                }
-                
             }
-            std::cout << counter << std::endl;
-            if (counter == 100)
-                {
-                    counter -= 100;
-                    updateGrid(renderer, x, y, grid);
-                }
+
+            int currentTime = SDL_GetTicks();  // Hämta nuvarande tid
+
+            if (currentTime - lastUpdateTime >= updateInterval)  // Kolla om det är dags att uppdatera sanden
+            {
+                lastUpdateTime = currentTime;  // Uppdatera senaste tiden
+                updateGrid(renderer, grid, lastUpdateTimeGrid, currentTime);  // Uppdatera hela griden
+            }
         }
 
-    SDL_Delay(100000);
-    
+        // Rensa resurser
+        for (int i = 0; i < 64; i++)
+        {
+            delete[] grid[i];
+            delete[] lastUpdateTimeGrid[i];
+        }
+        delete[] grid;
+        delete[] lastUpdateTimeGrid;
 
-    SDL_DestroyWindow(window);
-    SDL_Quit();
-    return 0;
+        SDL_DestroyWindow(window);
+        SDL_Quit();
+        return 0;
     }
 }
