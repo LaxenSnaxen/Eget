@@ -1,2 +1,2 @@
 all:
-	g++ -Iinclude -Iinclude/glad -Iinclude/GLFW -Linclude/GLFW/lib-vc2022 -o Main src/*.cpp -lglfw3dll -Lglwf3 -lopengl32 -lgdi32 -lmingw32
+	g++ -Iinclude -Iinclude/glad -Iinclude/GLFW -Linclude/GLFW/lib-vc2022 -o Main src/main.cpp src/glad.c -lglfw3dll -lopengl32 -lgdi32 -lmingw32
