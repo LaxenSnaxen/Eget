@@ -33,7 +33,7 @@ void updateGrid(T renderer, int** grid, int** lastUpdateTimeGrid, int currentTim
     {
         for (int y = 63; y >= 0; y--)  // Starta längst ner för att undvika problem med att kolla nästa rad
         {
-            if (grid[x][y] == 1 && y != 63)  // Om sandkornet inte är längst ner
+            if (grid[x][y] == 1 && y != 63 || x != 0 && x != 63 && y+1 != 1)  // Om sandkornet inte är längst ner
             {
                 // Kolla om tillräckligt mycket tid har passerat för just detta korn
                 if (currentTime - lastUpdateTimeGrid[x][y] >= 200)  // 200 ms mellan uppdateringar
