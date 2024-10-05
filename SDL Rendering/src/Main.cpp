@@ -9,18 +9,29 @@
 
 
 int lastUpdateTime = 0;
+int material = 1;
 
 template<typename T>
 
-int removeOldPointCreatNew(T renderer, int x, int y, int nx, int ny, int** grid)
+int removeOldPointCreatNew(T renderer, int x, int y, int nx, int ny, int** grid, int materiel)
 {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderDrawPoint(renderer, x, y);
-    SDL_SetRenderDrawColor(renderer, 235, 195, 50, 255);
+
+    if (materiel == 1)
+    {
+        SDL_SetRenderDrawColor(renderer, 235, 195, 50, 255);
+    }
+
+    if (materiel == 2)
+    {
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255 ,255);
+    }
     SDL_RenderDrawPoint(renderer, nx, ny);
     SDL_RenderPresent(renderer);
     grid [x] [y] = 0;
     grid [nx] [ny] = 1;
+
     return 0;
 }
 
@@ -45,7 +56,7 @@ void updateGrid(T renderer, int** grid, int** lastUpdateTimeGrid, int currentTim
                     {
                         int nx = x;
                         int ny = y + 1;
-                        removeOldPointCreatNew(renderer, x, y, nx, ny, grid);
+                        removeOldPointCreatNew(renderer, x, y, nx, ny, grid, material);
                     }
                     else if (grid[x + 1][y + 1] == 0 && grid[x - 1][y + 1] == 0)  // Om det finns plats på båda sidor
                     {
@@ -53,19 +64,19 @@ void updateGrid(T renderer, int** grid, int** lastUpdateTimeGrid, int currentTim
                         int random_value = std::rand() % 2;
                         int nx = (random_value != 1) ? x + 1 : x - 1;
                         int ny = y + 1;
-                        removeOldPointCreatNew(renderer, x, y, nx, ny, grid);
+                        removeOldPointCreatNew(renderer, x, y, nx, ny, grid, material);
                     }
                     else if (grid[x - 1][y + 1] == 0 && grid[x + 1][y + 1] == 1)
                     {
                         int nx = x - 1;
                         int ny = y + 1;
-                        removeOldPointCreatNew(renderer, x, y, nx, ny, grid);
+                        removeOldPointCreatNew(renderer, x, y, nx, ny, grid, material);
                     }
                     else if (grid[x + 1][y + 1] == 0 && grid[x - 1][y + 1] == 1)
                     {
                         int nx = x + 1;
                         int ny = y + 1;
-                        removeOldPointCreatNew(renderer, x, y, nx, ny, grid);
+                        removeOldPointCreatNew(renderer, x, y, nx, ny, grid, material);
                     }
                 }
             }
@@ -76,9 +87,16 @@ void updateGrid(T renderer, int** grid, int** lastUpdateTimeGrid, int currentTim
 
 template<typename T>
 
-void placeSand(T renderer, int** grid, int x, int y)
+void placeSand(T renderer, int** grid, int x, int y, int materiel)
 {
-    SDL_SetRenderDrawColor(renderer, 235, 195, 50, 255);
+    if (materiel == 1)
+    {
+        SDL_SetRenderDrawColor(renderer, 235, 195, 50, 255);
+    }
+    if (materiel == 2)
+    {
+        SDL_SetRenderDrawColor(renderer, 255 ,255 ,255 ,255);
+    }
     std::cout << "Before: " << grid[x][y] << std::endl;
     grid[x][y] = 1;
     std::cout << "After: " << grid[x][y] << std::endl;
@@ -128,12 +146,21 @@ int main(int argc, char* argv[])
             {
                 x = round(x / 10);
                 y = round(y / 10);
-                placeSand(renderer, grid, x, y);
+                placeSand(renderer, grid, x, y, material);
             }
 
             SDL_Event event;
             if (SDL_PollEvent(&event))
             {
+                switch(event.type)
+                {
+                    case SDL_KEYDOWN:
+                    if (event.key.keysym.sym == SDLK_e)
+                    {
+                        std::cout << "Pressed" << std::endl;
+                        material = 2;
+                    }
+                }
                 if (event.type == SDL_QUIT)
                     break;
             }
