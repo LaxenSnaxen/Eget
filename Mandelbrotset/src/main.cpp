@@ -3,23 +3,15 @@
 #include <iostream>
 #include <string>
 
-const int WIDTH =   800;
-const int HEIGHT =  600;
-float vertices [] = 
-{
-    -0.5f, -0.5f, 0.0f,
-    0.5f, -0.5f, 0.0f,
-    0.0f, 0.5f, 0.0f
-};
-const char *vertexShaderSource = "#version 420 core\n"
-"layout (location - 0) in vec3 aPos;\n"
-"void main()\n"
-"{\n"
-"   gl_Position - vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-"}\n";
+const int width =   800;
+const int height =  600;
+const float minReal = -2.0f;
+const float maxReal = 1.0f;
+const float minImg = -1.5f;
+const float maxImg = 1.5f;
 
-unsigned int vertexShader = glCreateShader(GL_VERTEX_SHADER);
-
+const int maxIterations = 1000;
+const int threshold = 2;
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
     {
@@ -34,6 +26,27 @@ void processInput(GLFWwindow *window)
     }
 }
 
+int mandelbrotCalculation(float x, float y)
+{
+    float cReal = minReal + (x/width) * (maxReal - minReal);
+    float cImg = maxImg + (y/height) * (maxImg - minImg);
+    float zReal = 0f;
+    float zImg = 0f;
+
+    for (int iterations = 0; iterations < maxIterations; iterations++)
+    {
+        float zRealNew = zReal * zReal - zImg * zImg + cReal;
+        float zImgNew = 2 * zReal * zImg + cImg;
+        zReal = zRealNew;
+        zImg = zImgNew;
+        if (zReal * zReal + zImg * zImg > threshold)
+        {
+            break;
+        }
+        return maxIterations;
+    }
+}
+
 
 int main()
 {
@@ -43,7 +56,7 @@ int main()
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "FÖNSTER", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(width, height, "FÖNSTER", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -57,11 +70,6 @@ int main()
         std::cout << "Failed to initialize GLAD" << std::endl;
         return -1;
     }
-
-    unsigned int VBO;
-    glGenBuffers(1, &VBO);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
