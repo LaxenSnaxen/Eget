@@ -104,5 +104,63 @@ int mandelbrotCalculation(int x, int y)
     double cReal = minReal + (static_cast<double>(x) / width) * (maxReal - minReal);
     double cImg = maxImg - (static_cast<double>(y) / height) * (maxImg - minImg);
 
+    // Börjar med att z är 0.
+    double zReal = 0.0;
+    double zImg = 0.0;
 
+    //Mandelbrot iterationerna
+    for (double iterations = 0.0; < maxIterations; iterations++)
+    {
+        // Beräkna z^2 + c
+        double zRealNew = zReal * zReal - zImg * zImg + cReal;
+        double zImgNew = 2 * zReal * zImg + cImg;
+
+        zReal = zRealNew;
+        zImg = zImgNew;
+
+        // Kontrollera om vi har flykt, alltså att det fortsätter till oändlighet
+        if (zReal * zReal + zImg * zImg > threshold)
+        {
+            return iterations
+        }
+    }
+
+    return maxIterations;
+}
+
+GLuint createShaderProgram(const char* vertexSource, const char* fragmenSource)
+{
+    // Skapa och kompilera vertex shader.
+    GLuint vertexShader = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertexShader, 1, &vertexSource, NULL);
+
+    // Kontrollerar om shadern kompilerades korrekt.
+    GLint success;
+    glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+    if (!success)
+    {
+        char infoLog[512];
+        glGetShaderInfoLog(vertexShader, 512, NULL, infoLog);
+        std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl;
+    }
+
+    // Skapa och kompilera fragment shader.
+    GLuint fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragmentShader, 1, &fragmenSource, NULL);
+    glCompileShader(fragmentShader);
+
+    // Kontrollerar om shadern kompilerades korrekt.
+    glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success);
+    if (!success) 
+    {
+        char infoLog[512];
+        glGetShaderInfoLog(fragmentShader, 512, NULL, infoLog);
+        std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+    }
+
+    // Skapa shaderprogram och länkar shaders.
+    GLuint shaderProgram = glCreateProgram();
+    glAttackShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
 }
