@@ -111,6 +111,23 @@
     "typeinfo": "cpp",
     "list": "cpp",
     "map": "cpp",
-    "sstream": "cpp"
+    "sstream": "cpp",
+    "bitset": "cpp",
+    "charconv": "cpp",
+    "chrono": "cpp",
+    "complex": "cpp",
+    "condition_variable": "cpp",
+    "cstring": "cpp",
+    "set": "cpp",
+    "unordered_set": "cpp",
+    "regex": "cpp",
+    "format": "cpp",
+    "future": "cpp",
+    "iomanip": "cpp",
+    "mutex": "cpp",
+    "span": "cpp",
+    "cfenv": "cpp",
+    "typeindex": "cpp",
+    "variant": "cpp"
   }
 }
